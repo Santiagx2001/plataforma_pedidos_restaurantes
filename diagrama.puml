@@ -1,0 +1,125 @@
+@startuml
+' Estilo
+skinparam packageStyle rectangle
+
+' Capa de presentación
+package "Presentación" {
+  class ClienteController {
+    +registrar()
+    +autenticar()
+    +crearPedido()
+  }
+
+  class RestauranteController {
+    +gestionarMenu()
+    +generarReporte()
+  }
+}
+
+' Capa de dominio
+package "Dominio" {
+  class Cliente {
+    -id
+    -nombre
+    -email
+    +autenticarse()
+  }
+
+  class Restaurante {
+    -id
+    -nombre
+    +gestionarMenu()
+  }
+
+  class Producto {
+    -id
+    -nombre
+    -precio
+  }
+
+  class Menu {
+    -productos : List<Producto>
+    +agregarProducto()
+    +removerProducto()
+  }
+
+  class Pedido {
+    -id
+    -cliente : Cliente
+    -productos : List<Producto>
+    -estado
+    +agregarProducto()
+    +confirmar()
+  }
+
+  class ReporteVentas {
+    -fechaInicio
+    -fechaFin
+    +generar()
+  }
+
+  class GestorPedidos {
+    +crearPedido()
+    +consultarEstado()
+  }
+
+  class GestorReportes {
+    -instancia : GestorReportes
+    +getInstancia()
+    +generarReporte()
+  }
+}
+
+' Capa de datos
+package "DAO" {
+  class ClienteDAO {
+    +guardar(cliente)
+    +buscar(id)
+  }
+
+  class PedidoDAO {
+    +guardar(pedido)
+    +buscarPorCliente(clienteId)
+  }
+
+  class ProductoDAO {
+    +listarPorRestaurante(idRestaurante)
+  }
+}
+
+' Servicios externos
+package "Servicios Externos" {
+  interface PagoService {
+    +procesarPago()
+  }
+
+  class StripeAdapter {
+    +procesarPago()
+  }
+
+  PagoService <|.. StripeAdapter
+}
+
+' Relaciones
+ClienteController --> Cliente
+ClienteController --> GestorPedidos
+RestauranteController --> Restaurante
+RestauranteController --> GestorReportes
+
+GestorPedidos --> Pedido
+GestorPedidos --> PedidoDAO
+GestorPedidos --> PagoService
+
+GestorReportes --> ReporteVentas
+
+Pedido --> Cliente
+Pedido --> Producto
+
+Menu --> Producto
+Restaurante --> Menu
+
+ClienteDAO --> Cliente
+PedidoDAO --> Pedido
+ProductoDAO --> Producto
+
+@enduml
