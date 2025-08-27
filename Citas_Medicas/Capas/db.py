@@ -3,25 +3,51 @@
 import sqlite3
 
 # Conectar (crea el archivo si no existe)
-conexion = sqlite3.connect("mi_base.db")
+conexion = sqlite3.connect("Restaurante.db")
 cursor = conexion.cursor()
 
 # Crear tablas
+    # Tabla de productos (menú)
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS usuarios (
-    cedula INTEGER PRIMARY KEY AUTOINCREMENT,
-    nombre TEXT NOT NULL,
-    edad INTEGER
-)
-""")
+    CREATE TABLE IF NOT EXISTS productos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nombre TEXT NOT NULL,
+        precio REAL NOT NULL,
+        disponible INTEGER DEFAULT 1
+    )
+    """)
 
+    # Tabla de clientes
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS citas (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    cedula INTEGER NOT NULL,
-    fecha TEXT NOT NULL,
-    motivo TEXT,
-    FOREIGN KEY (cedula) REFERENCES usuarios(cedula)
-)
-""")
+    CREATE TABLE IF NOT EXISTS clientes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nombre TEXT NOT NULL,
+        telefono TEXT,
+        correo TEXT
+    )
+    """)
+
+    # Tabla de pedidos
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS pedidos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        cliente_id INTEGER,
+        fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        total REAL DEFAULT 0,
+        FOREIGN KEY (cliente_id) REFERENCES clientes(id)
+    )
+    """)
+
+    # Detalle del pedido (productos en cada pedido)
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS detalle_pedido (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        pedido_id INTEGER,
+        producto_id INTEGER,
+        cantidad INTEGER NOT NULL,
+        subtotal REAL NOT NULL,
+        FOREIGN KEY (pedido_id) REFERENCES pedidos(id),
+        FOREIGN KEY (producto_id) REFERENCES productos(id)
+    )
+    """)
 
