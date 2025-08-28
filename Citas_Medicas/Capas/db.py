@@ -20,7 +20,7 @@ cursor.execute("""
     # Tabla de clientes
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS clientes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        cedula INTEGER PRIMARY KEY,
         nombre TEXT NOT NULL,
         telefono TEXT,
         correo TEXT
@@ -31,10 +31,10 @@ cursor.execute("""
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS pedidos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        cliente_id INTEGER,
+        cedula_cliente INTEGER,
         fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         total REAL DEFAULT 0,
-        FOREIGN KEY (cliente_id) REFERENCES clientes(id)
+        FOREIGN KEY (cedula_cliente) REFERENCES clientes(cedula)
     )
     """)
 
